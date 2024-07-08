@@ -55,3 +55,25 @@ kubectl cluster-info
 cat /etc/kubernetes/admin.conf
 cat ~/.kube/config
 kubectl config view --minify
+
+
+#change permission to current user
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+sudo chown -R $(id -u):$(id -g) $HOME/.kube/
+
+#install helm
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+
+# to repo helm file
+sudo wget https://github.com/helmfile/helmfile/releases/download/v0.166.0/helmfile_0.166.0_linux_amd64.tar.gz
+sudo tar -xxf helmfile_0.166.0_linux_amd64.tar.gz
+sudo rm helmfile_0.166.0_linux_amd64.tar.gz
+sudo mv helmfile /usr/local/bin/
+
+# install helm diff
+helm plugin install https://github.com/databus23/helm-diff
