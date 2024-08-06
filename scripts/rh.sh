@@ -1,0 +1,1 @@
+subscription-manager register --username do.vuong@datdyn.com --password Vuongdsn99bJB --auto-attach
