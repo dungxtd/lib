@@ -1,0 +1,100 @@
+---
+- hosts: all
+  become: yes
+
+  vars:
+    sysadmin_user: sysadmin
+    hostname: prod-server
+    dns_name: example.com
+    docker_logging_driver: "json-file"
+    docker_storage_driver: "overlay2"
+    command_log_file: "/var/log/command_history.log"
+
+  tasks:
+    - name: Update and upgrade the server
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Set the hostname
+      hostname:
+        name: "{{ hostname }}"
+
+    - name: Set the DNS name
+      lineinfile:
+        path: /etc/hosts
+        line: "127.0.1.1 {{ dns_name }} {{ hostname }}"
+        state: present
+
+    - name: Create the sysadmin user
+      user:
+        name: "{{ sysadmin_user }}"
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+
+    - name: Ensure the sysadmin user has passwordless sudo
+      lineinfile:
+        path: /etc/sudoers
+        line: "{{ sysadmin_user }} ALL=(ALL) NOPASSWD:ALL"
+        validate: "visudo -cf %s"
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Configure Docker logging driver
+      lineinfile:
+        path: /etc/docker/daemon.json
+        line: '"log-driver": "{{ docker_logging_driver }}"'
+        state: present
+        create: yes
+        insertafter: "{"
+
+    - name: Configure Docker storage driver
+      lineinfile:
+        path: /etc/docker/daemon.json
+        line: '"storage-driver": "{{ docker_storage_driver }}"'
+        state: present
+        insertafter: '"log-driver": "{{ docker_logging_driver }}",'
+
+    - name: Restart Docker service
+      service:
+        name: docker
+        state: restarted
+
+    - name: Tune system for high network traffic
+      sysctl:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+      with_items:
+        - { key: "net.core.somaxconn", value: "4096" }
+        - { key: "net.ipv4.tcp_tw_reuse", value: "1" }
+        - { key: "net.ipv4.tcp_max_syn_backlog", value: "4096" }
+        - { key: "net.core.netdev_max_backlog", value: "4096" }
+      sysctl_set: yes
+      sysctl_file: /etc/sysctl.conf
+
+    - name: Create command logging script
+      copy:
+        content: |
+          #!/bin/bash
+          declare -rx HISTFILESIZE=1000000
+          declare -rx HISTSIZE=1000000
+          declare -rx HISTFILE="{{ command_log_file }}"
+          declare -rx PROMPT_COMMAND='history -a >(tee -a $HISTFILE)'
+
+        dest: /etc/profile.d/command_logging.sh
+        mode: 0755
+
+    - name: Ensure command logging file is created
+      file:
+        path: "{{ command_log_file }}"
+        state: touch
+        owner: root
+        group: root
+        mode: 0600
+
+    - name: Reboot the server
+      reboot:
