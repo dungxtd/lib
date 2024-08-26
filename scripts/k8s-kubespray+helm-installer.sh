@@ -74,3 +74,4 @@ helm plugin install https://github.com/databus23/helm-diff
 adduser devops && usermod -aG sudo devops && su devops
 ansible-playbook cluster.yml -i inventory/mycluster/hosts.yaml -e kube_version=v1.29.5 --become --become-user=root -kK --timeout 30
 
+ansible-playbook -i inventory/qe/hosts.yaml  --become --become-user=root --user=devops scale.yml --limit=region2 -K
