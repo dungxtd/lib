@@ -1,0 +1,48 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: container-image-policy
+spec:
+  validationFailureAction: Enforce
+  background: false
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail
+  rules:
+  - name: container-registry-required
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Image must be from Zubin container registry"
+      pattern:
+        spec:
+          containers:
+          - image: "10.210.60.130:5000*"
+  - name: verify-image-signature
+    match:
+      resources:
+        kinds:
+        - Pod
+    verifyImages:
+    - imageReferences:
+      - "10.210.60.130:5000*"
+      attestors:
+      - count: 1
+        entries:
+          - keys:
+              publicKeys: |-
+                -----BEGIN PUBLIC KEY-----
+                MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA2bPUKOUTeP21ktIxURXB
+                XJTakJmFA91B2ahR54gfo9tfAxm3Eh+9Q4myLzee2hXYU8zt8FQhFVDsPtalh0nU
+                vgrGAohcsHA5GfiZXpxUm71IZEpbK+cwJJ5vGNAX+3L1o9KGRBvOwNzdIkWidL5o
+                g7Qez3s/TrIgx4F3NUzgSamHD5DltbOjVvfxYFwrKkjLSGJUIK8pfReJdoHH+U/E
+                5U9XNevKv5Bc3va35MikIRZVbVAsF/zh+Liv28orVoXRrk2FVIZ+dknPbxcEir1z
+                UHBUbWju4tk3KUfgCn6j2P6iL2AEHRN41ibf+37Pp6JaYBu0f0R3z6WOG2YROeW5
+                cSDKXm1oukS6X7D8rMtM1pRRRFCEISGsyACwD/f3VEz1p1ehx3moywvHdk1gllBz
+                e2uYeYrV4NxcMmp+xYj+pPfVh0eJECfLcqae1Zc+QOUpJHfpDFwgDiWILn0cZOEp
+                30cyLzaQ5Oy4G3XZciIbPhC8VI4K+N/vQT8CCmD/Fwa3AgMBAAE=
+                -----END PUBLIC KEY-----              
+              rekor:
+                ignoreTlog: true
+                url: https://rekor.sigstore.dev
