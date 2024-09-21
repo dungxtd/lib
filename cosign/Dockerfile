@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     tpm2-tools \
     libengine-pkcs11-openssl \
     opensc \
+    jq \
     && rm -rf /var/lib/apt/lists/*
 
 # Thêm chứng chỉ CA vào hệ thống
@@ -59,12 +60,5 @@ TaomFIP8CKkgq2IbWg==
 -----END CERTIFICATE-----
 EOF
 
-# Thêm entry vào /etc/hosts
-RUN echo "10.210.24.205 ddplatform-pvt-registry" >> /etc/hosts
-
 # Cập nhật chứng chỉ CA
 RUN update-ca-certificates
-
-# Entry point cho cosign
-ENTRYPOINT ["cosign"]
-CMD ["--help"]
