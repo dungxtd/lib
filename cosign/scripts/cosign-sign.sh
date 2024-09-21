@@ -15,7 +15,7 @@ cosign pkcs11-tool list-keys-uris --module-path ${PATH_COSIGN_LIB}/libp11.so --s
             --key ${uri_value}  \
             ${IMAGE_NAME} \
             -y -a author='Data Dynamics' -a project='Zubin' -a signedDate=$(date +%Y-%m-%dT%H:%M:%S) 2>&1); then
-        echo "Signing successful!!!"
+        echo "--- Signing successful ---"
         cosign verify \
             --key ${uri_value} \
             ${IMAGE_NAME} | jq .
