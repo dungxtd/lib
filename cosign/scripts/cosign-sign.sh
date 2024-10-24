@@ -1,6 +1,5 @@
 #!/bin/bash
-cosign login ddplatform-pvt-registry:443 \
-    --username=ddpadmin --password=User@123
+cosign login ddplatform-pvt-registry:443 --username=ddpadmin --password=User@123
 cosign clean ${IMAGE_NAME} -f
 cosign pkcs11-tool list-tokens --module-path ${PATH_COSIGN_LIB}/libp11.so
 cosign pkcs11-tool list-keys-uris --module-path ${PATH_COSIGN_LIB}/libp11.so --slot-id 0 --pin anything | grep "pkcs11:token=" | while read -r line; do

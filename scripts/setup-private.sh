@@ -32,12 +32,34 @@ TaomFIP8CKkgq2IbWg==
 -----END CERTIFICATE-----
 EOF
 
-# echo "10.210.24.205 ddplatform-pvt-registry" | sudo tee -a /etc/hosts
+echo "10.210.24.205 ddplatform-pvt-registry" | sudo tee -a /etc/hosts
 sudo update-ca-trust
-sudo systemctl restart containerd
+
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/repodata/repomd.xml.key
+EOF
+sudo yum install -y kubectl
+
+sudo systemctl stop firewalld
+sudo systemctl disable firewalld
+
+
+sudo systemctl restart podman
+
+podman login ddplatform-pvt-registry:443     --username=ddpadmin --password=User@123
 sudo /usr/local/bin/crictl pull ddplatform-pvt-registry:443/zubin-ds-keyword-matching-algorithm:14204
 
 
+./create-hosts.sh 10.210.60.135 10.210.60.136 10.210.60.137
+./update-host.sh registry 10.210.60.138
+./update-host.sh repo 10.210.60.138
+./bootstrap-cluster.sh
+./init-base-platform.sh
 
 sudo cat <<EOF > /usr/local/share/ca-certificates/ca.crt
 -----BEGIN CERTIFICATE-----
