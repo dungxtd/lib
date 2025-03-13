@@ -1,0 +1,12 @@
+global:
+  postgresql:
+    auth:
+      postgresPassword: bobarr
+      username: bobarr
+      password: bobarr
+      database: n8n
+
+primary:
+  persistence:
+    enabled: true
+    size: 4Gi

@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whalestream-api
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: whalestream-api
+  template:
+    metadata:
+      labels:
+        app: whalestream-api
+    spec:
+      containers:
+      - name: whalestream-api
+        image: dungxtd/whalestream-api:0.1.2
+        command: ["yarn", "start:prod"]
+        envFrom:
+        - configMapRef:
+            name: whalestream-api-config
+        - secretRef:
+            name: whalestream-api-secret
+        volumeMounts:
+        - name: library
+          mountPath: /usr/library
+      volumes:
+      - name: library
+        hostPath:
+          path: /path/to/your/library
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whalestream-landing
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: whalestream-landing
+  template:
+    metadata:
+      labels:
+        app: whalestream-landing
+    spec:
+      containers:
+      - name: whalestream-landing
+        image: dungxtd/whale-landing:0.1.7
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whalelog
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: whalelog
+  template:
+    metadata:
+      labels:
+        app: whalelog
+    spec:
+      containers:
+      - name: whalelog
+        image: dungxtd/whalelog:0.1.8
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whale-bobar-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whale-bobar-web
+  template:
+    metadata:
+      labels:
+        app: whale-bobar-web
+    spec:
+      containers:
+      - name: whale-bobar-web
+        image: dungxtd/bobar-web:0.1.2
+        command: ["yarn", "start"]
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whale-py
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whale-py
+  template:
+    metadata:
+      labels:
+        app: whale-py
+    spec:
+      containers:
+      - name: whale-py
+        image: dungxtd/py:0.1.0

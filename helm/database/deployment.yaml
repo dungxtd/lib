@@ -1,0 +1,56 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jackett
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: jackett
+  template:
+    metadata:
+      labels:
+        app: jackett
+    spec:
+      containers:
+      - name: jackett
+        image: linuxserver/jackett
+        envFrom:
+        - configMapRef:
+            name: whalestream-api-config
+        - secretRef:
+            name: whalestream-api-secret
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        ports:
+        - containerPort: 9117
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: jackett-config
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flaresolverr
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flaresolverr
+  template:
+    metadata:
+      labels:
+        app: flaresolverr
+    spec:
+      containers:
+      - name: flaresolverr
+        image: ghcr.io/flaresolverr/flaresolverr:latest
+        env:
+        - name: LOG_LEVEL
+          value: info

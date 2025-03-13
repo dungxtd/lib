@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: whalestream-api-config
+data:
+  ENV: production
+  TZ: Europe/Paris
+  UMASK_SET: "0002"
+  PUID: "510"
+  PGID: "20"
+  JACKETT_AUTOMATIC_SEARCH_TIMEOUT: "120000"
+  JACKETT_MANUAL_SEARCH_TIMEOUT: "15000"
+  LIBRARY_MOVIES_FOLDER_NAME: movies
+  LIBRARY_TV_SHOWS_FOLDER_NAME: tvshows
+  DEBUG_REDIS: "false"
+  # Uncomment and set your value if needed
+  # WEB_UI_API_URL: http://yourdomain.com/api

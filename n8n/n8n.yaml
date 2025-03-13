@@ -1,0 +1,32 @@
+config:
+  database:
+    type: postgresdb
+    postgresdb:
+      database: n8n
+      host: postgres
+secret:
+  database:
+    postgresdb:
+      user: bobarr
+      password: bobarr
+extraEnv:
+  # N8N_HOST: "n8n.whalelog.com"
+  # N8N_PROTOCOL: https
+  WEBHOOK_TUNNEL_URL: "https://n8n.whalelog.com/n8n/"
+  WEBHOOK_URL: "https://n8n.whalelog.com"
+  N8N_EDITOR_BASE_URL: "https://n8n.whalelog.com"
+  N8N_SECURE_COOKIE: "false"
+  GENERIC_TIMEZONE: "Asia/Ho_Chi_Minh"
+  N8N_ENCRYPTION_KEY: hehehe
+  N8N_BASIC_AUTH_USER: dungxtd20@gmail.com
+  N8N_BASIC_AUTH_PASSWORD: Ikblue=1
+  # N8N_LICENSE_ACTIVATION_KEY: 133495e8-0143-41c3-84e9-5e71612ba840
+service:
+  type: LoadBalancer
+image:
+  tag: "1.74.1"
+scaling:
+  enabled: true
+  redis:
+    host: "redis"
+    password: "password"
