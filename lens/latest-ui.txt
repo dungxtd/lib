@@ -1,0 +1,6 @@
+https://downloads.k8slens.dev/ide/Lens-2024.8.291605-latest-arm64.dmg
+https://downloads.k8slens.dev/ide/Lens%20Setup%202024.8.291605-latest.exe
+
+brew install --cask lens@2024.8.291605
+
+sudo chmod -R 000 ~/Library/Application\ Support/Caches/lens-updater/pending/
