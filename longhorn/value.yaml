@@ -1,0 +1,8 @@
+csi:
+  kubeletRootDir: "/var/lib/kubelet"
+defaultSettings:
+  diskType: "flesystem"
+service:
+  ui:
+    # -- Service type for Longhorn UI. (Options: "ClusterIP", "NodePort", "LoadBalancer", "Rancher-Proxy")
+    type: LoadBalancer
