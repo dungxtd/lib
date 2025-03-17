@@ -12,3 +12,7 @@ helm upgrade \
   --set-string oauth.clientSecret="<OAuth client secret>" \
   --set-string apiServerProxyConfig.mode="true" \
   --wait
+
+tailscale configure kubeconfig tailscale-operator
+
+kubectl create clusterrolebinding k8s-admins-full-access --clusterrole=cluster-admin --group=system:masters
